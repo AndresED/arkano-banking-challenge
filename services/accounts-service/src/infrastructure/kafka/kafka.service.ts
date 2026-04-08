@@ -61,9 +61,32 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
   }
 
   async send(topic: string, key: string | null, value: string): Promise<void> {
+    this.logBusPublish(topic, key, value);
     await this.producer.send({
       topic,
       messages: [{ key: key ?? undefined, value }],
     });
+  }
+
+  private logBusPublish(topic: string, key: string | null, value: string): void {
+    try {
+      const j = JSON.parse(value) as {
+        eventType?: string;
+        eventId?: string;
+        payload?: { transactionId?: string; accountId?: string };
+      };
+      const tx = j.payload?.transactionId;
+      const acc = j.payload?.accountId;
+      this.logger.log(
+        `[EVENT-BUS] PUBLISH [accounts-service] -> topic=${topic} key=${key ?? 'null'} ` +
+          `eventType=${j.eventType ?? '?'} eventId=${j.eventId ?? '?'}` +
+          (tx ? ` transactionId=${tx}` : '') +
+          (acc ? ` accountId=${acc}` : ''),
+      );
+    } catch {
+      this.logger.log(
+        `[EVENT-BUS] PUBLISH [accounts-service] -> topic=${topic} key=${key ?? 'null'} (raw)`,
+      );
+    }
   }
 }

@@ -225,7 +225,7 @@ Creación best-effort de topics en `KafkaService.onModuleInit`.
 
 ## 12. Variables de entorno (referencia)
 
-Ver `services/ai-service/.env.example`: `PORT`, `DATABASE_URL`, `KAFKA_BROKERS`, `USE_OLLAMA`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT_MS`.
+Ver `services/ai-service/.env.example`: `PORT`, `DATABASE_URL`, `KAFKA_BROKERS`, `KAFKA_CONSUMER_FROM_BEGINNING` (en local suele ser `true` para no perder `TransactionCompleted` si el consumer tarda en unirse al grupo), `USE_OLLAMA`, `OLLAMA_*`.
 
 ---
 

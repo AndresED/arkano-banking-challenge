@@ -10,20 +10,22 @@ Microservicio NestJS que recibe **solicitudes de transacciones** (depósito, ret
 
 ### `AppModule` (`src/app.module.ts`)
 
-| Import | Función |
-|--------|---------|
-| `ConfigModule.forRoot({ isGlobal: true })` | Configuración global |
-| `TypeOrmModule.forRootAsync(...)` | PostgreSQL (`DATABASE_URL`) |
-| `TransactionsModule` | Único módulo de feature |
+
+| Import                                     | Función                    |
+| -------------------------------------------- | ----------------------------- |
+| `ConfigModule.forRoot({ isGlobal: true })` | Configuración global       |
+| `TypeOrmModule.forRootAsync(...)`          | PostgreSQL (`DATABASE_URL`) |
+| `TransactionsModule`                       | Único módulo de feature   |
 
 ### `TransactionsModule` (`src/modules/transactions/transactions.module.ts`)
 
-| Tipo | Registro |
-|------|----------|
-| **Imports** | `CqrsModule`, `TypeOrmModule.forFeature([TransactionOrmEntity, AccountSnapshotOrmEntity, OutboxEventOrmEntity, ProcessedEventOrmEntity])` |
-| **Controllers** | `TransactionsController` |
-| **Handlers** | `RequestTransactionHandler`, `GetTransactionByIdHandler` |
-| **Providers** | `KafkaService`, `OutboxPublisherService`, `AccountEventApplierService`, `AccountEventsConsumer`, `TransactionExecuteService`, `TransactionRequestedConsumer` |
+
+| Tipo            | Registro                                                                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Imports**     | `CqrsModule`, `TypeOrmModule.forFeature([TransactionOrmEntity, AccountSnapshotOrmEntity, OutboxEventOrmEntity, ProcessedEventOrmEntity])`                    |
+| **Controllers** | `TransactionsController`                                                                                                                                     |
+| **Handlers**    | `RequestTransactionHandler`, `GetTransactionByIdHandler`                                                                                                     |
+| **Providers**   | `KafkaService`, `OutboxPublisherService`, `AccountEventApplierService`, `AccountEventsConsumer`, `TransactionExecuteService`, `TransactionRequestedConsumer` |
 
 ---
 
@@ -59,10 +61,11 @@ El **núcleo de negocio** de ejecución está en `TransactionExecuteService` (no
 
 ## 3. API HTTP
 
-| Método | Ruta | Comportamiento |
-|--------|------|----------------|
-| POST | `/transactions` | **202** — Crea fila `transactions` en `pending` + outbox `TransactionRequested` |
-| GET | `/transactions/:id` | **200** vista / **404** si no existe |
+
+| Método | Ruta                | Comportamiento                                                                   |
+| --------- | --------------------- | ---------------------------------------------------------------------------------- |
+| POST    | `/transactions`     | **202** — Crea fila `transactions` en `pending` + outbox `TransactionRequested` |
+| GET     | `/transactions/:id` | **200** vista / **404** si no existe                                             |
 
 **DTO** `RequestTransactionDto`: `type` ∈ deposit | withdrawal | transfer, `amount` > 0, `sourceAccountId` / `targetAccountId` opcionales según tipo. Validaciones adicionales en `RequestTransactionHandler` (p. ej. transfer requiere ambas cuentas).
 
@@ -142,7 +145,7 @@ flowchart TD
 
 ---
 
-## 7. Diagrama de secuencia — transferencia exitosa (dos patas)
+## 7. Diagrama de secuencia — transferencia exitosa
 
 ```mermaid
 sequenceDiagram
@@ -169,11 +172,12 @@ Cada **TransactionCompleted** lleva `transactionId`, `amount` (+/-) y `accountId
 
 ## 8. Estados y reglas (resumen)
 
-| Estado | Significado |
-|--------|-------------|
-| `pending` | Registrada; esperando procesamiento del consumidor |
-| `completed` | Ejecutada; eventos de resultado en outbox |
-| `rejected` | Rechazada con `reason`; `TransactionRejected` en outbox |
+
+| Estado      | Significado                                            |
+| ------------- | -------------------------------------------------------- |
+| `pending`   | Registrada; esperando procesamiento del consumidor     |
+| `completed` | Ejecutada; eventos de resultado en outbox              |
+| `rejected`  | Rechazada con`reason`; `TransactionRejected` en outbox |
 
 **Snapshots (`account_snapshots`):** réplica local alimentada por `AccountCreated` y `BalanceUpdated` desde `account-events`. La ejecución valida existencia y fondos contra estos datos (no contra la BD de accounts en tiempo real).
 
@@ -217,20 +221,22 @@ erDiagram
 
 ### Diccionario de datos (resumen)
 
-| Tabla | Propósito |
-|-------|-----------|
-| `transactions` | Solicitud y estado del movimiento |
+
+| Tabla               | Propósito                                              |
+| --------------------- | --------------------------------------------------------- |
+| `transactions`      | Solicitud y estado del movimiento                       |
 | `account_snapshots` | Vista local para validar cuentas y saldos en ejecución |
-| `outbox_events` | Outbox hacia `transaction-events` |
-| `processed_events` | Idempotencia de consumo de eventos entrantes |
+| `outbox_events`     | Outbox hacia`transaction-events`                        |
+| `processed_events`  | Idempotencia de consumo de eventos entrantes            |
 
 ---
 
 ## 10. Eventos Kafka
 
-| Topic | Rol |
-|-------|-----|
-| `account-events` | **Consume:** `AccountCreated`, `BalanceUpdated` → actualiza `account_snapshots` |
+
+| Topic                | Rol                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `account-events`     | **Consume:** `AccountCreated`, `BalanceUpdated` → actualiza `account_snapshots`                                        |
 | `transaction-events` | **Consume:** `TransactionRequested`; **publica:** `TransactionRequested`, `TransactionCompleted`, `TransactionRejected` |
 
 El topic `transaction-events-dlq` está definido en constantes compartidas con ai-service; **el productor DLQ** para mensajes fallidos está implementado en **ai-service**, no en transactions.
@@ -239,11 +245,12 @@ El topic `transaction-events-dlq` está definido en constantes compartidas con a
 
 ## 11. Servicios externos
 
-| Sistema | Uso |
-|---------|-----|
-| PostgreSQL | Persistencia |
-| Kafka / Redpanda | Orquestación asíncrona |
-| **accounts-service** (indirecto) | Eventos en `account-events` que alimentan snapshots |
+
+| Sistema                          | Uso                                                |
+| ---------------------------------- | ---------------------------------------------------- |
+| PostgreSQL                       | Persistencia                                       |
+| Kafka / Redpanda                 | Orquestación asíncrona                           |
+| **accounts-service** (indirecto) | Eventos en`account-events` que alimentan snapshots |
 
 ---
 

@@ -254,7 +254,7 @@ Si el paso 3 falla (siempre `rejected` por cuenta desconocida), suele ser que **
 | Nest no arranca por BD | `docker compose ps`, `DATABASE_URL`, que existan las tres bases. |
 | Nest no arranca por Kafka | `KAFKA_BROKERS=localhost:19092`, contenedor Redpanda arriba. |
 | Transacción siempre rechazada “Unknown account” | Que `transactions-service` esté consumiendo `account-events` y que la cuenta se haya creado antes. |
-| AI devuelve 404 en explicaciones | Que el evento haya sido consumido; revisa logs del `ai-service`. |
+| AI devuelve 404 en explicaciones | Espera a `Subscribed to transaction-events` en logs; en `.env` usa `KAFKA_CONSUMER_FROM_BEGINNING=true` (ver `ai-service/.env.example`) si completaste la tx antes de que el consumer estuviera listo; revisa fallos Ollama/DLQ en logs. |
 | Mensajes en DLQ | Inspeccionar topic `transaction-events-dlq` con herramientas Kafka/Redpanda; corregir causa y reprocesar manualmente si aplica. |
 
 ---

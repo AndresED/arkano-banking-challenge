@@ -2,6 +2,8 @@
 
 Esta guía explica cómo validar, con **Postman**, el comportamiento descrito en [`01-requerimientos/requerimientos.md`](../01-requerimientos/requerimientos.md) sobre la implementación actual (tres servicios HTTP: **3001**, **3002**, **3003**).
 
+Para el **detalle de cada endpoint y del flujo event-driven** (qué ocurre dentro de cada servicio), ver también [guia-endpoints-paso-a-paso.md](./guia-endpoints-paso-a-paso.md).
+
 ---
 
 ## 1. Antes de abrir Postman

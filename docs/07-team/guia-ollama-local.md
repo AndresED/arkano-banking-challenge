@@ -11,6 +11,16 @@ El **ai-service** puede generar explicaciones y resúmenes con **Ollama** (LLM l
 | **Mock** (por defecto) | `USE_OLLAMA` ausente o `false` | Texto fijo en español (`MockLlmService`) y resumen por cuenta tipo lista. |
 | **Ollama** | `USE_OLLAMA=true` | Llamadas HTTP a la API de Ollama (`/api/chat`) para explicar eventos y resumir historial. |
 
+### Inspeccionar petición y respuesta de Ollama
+
+Con `USE_OLLAMA=true`, el **`OllamaLlmService`** escribe en consola del ai-service líneas con prefijo **`[OLLAMA]`**:
+
+- **`REQUEST POST {url}`** — cuerpo JSON enviado (`model`, `messages` con `system` y `user`, `stream: false`).
+- **`RESPONSE HTTP {status}`** — cuerpo **crudo** devuelto por Ollama (tamaño en caracteres + texto completo).
+- **`EXTRACTED message.content`** — texto ya recortado que se usará como explicación o resumen.
+
+Para desactivar el volcado de cuerpos (solo URL, modelo y tamaños): **`OLLAMA_LOG_IO=false`** en `.env`.
+
 Los endpoints HTTP del AI service:
 
 - `GET /explanations/:transactionId` — explicaciones guardadas al consumir `TransactionCompleted` / `TransactionRejected`.

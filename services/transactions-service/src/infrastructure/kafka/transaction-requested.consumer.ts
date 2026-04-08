@@ -29,13 +29,34 @@ export class TransactionRequestedConsumer implements OnModuleInit {
       fromBeginning: false,
     });
     await consumer.run({
-      eachMessage: async ({ message }) => {
+      eachMessage: async ({ topic, partition, message }) => {
         if (!message.value) return;
         try {
           const env = parseEnvelope(message.value.toString());
-          if (env.eventType !== 'TransactionRequested') return;
+          const p = partition;
+          const o = message.offset;
+          this.logger.log(
+            `[EVENT-BUS] CONSUME [transactions-service] <- topic=${topic} ` +
+              `partition=${p} offset=${o} eventType=${env.eventType} eventId=${env.eventId}`,
+          );
+          if (env.eventType !== 'TransactionRequested') {
+            this.logger.log(
+              `[EVENT-BUS] SKIP [transactions-service] eventId=${env.eventId} ` +
+                `(solo procesa TransactionRequested; recibido ${env.eventType})`,
+            );
+            return;
+          }
+          const payload = env.payload as TransactionRequestedPayload;
+          this.logger.log(
+            `[EVENT-BUS] EXEC [transactions-service] TransactionRequested ` +
+              `transactionId=${payload.transactionId} type=${payload.type}`,
+          );
           await this.executor.executeRequested(
             env as EventEnvelope<TransactionRequestedPayload>,
+          );
+          this.logger.log(
+            `[EVENT-BUS] DONE [transactions-service] TransactionRequested ` +
+              `transactionId=${payload.transactionId}`,
           );
         } catch (e) {
           this.logger.error(`transaction-requested consumer: ${e}`);

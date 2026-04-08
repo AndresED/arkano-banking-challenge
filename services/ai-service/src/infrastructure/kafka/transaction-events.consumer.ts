@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -18,6 +19,7 @@ export class TransactionEventsConsumer implements OnModuleInit {
   private readonly logger = new Logger(TransactionEventsConsumer.name);
 
   constructor(
+    private readonly config: ConfigService,
     private readonly kafkaService: KafkaService,
     private readonly applier: AiTransactionEventApplierService,
     @InjectRepository(ProcessedEventOrmEntity)
@@ -25,16 +27,21 @@ export class TransactionEventsConsumer implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    const fromBeginning =
+      this.config
+        .get<string>('KAFKA_CONSUMER_FROM_BEGINNING', 'false')
+        .toLowerCase() === 'true';
+
     const consumer = this.kafkaService.getKafka().consumer({
       groupId: 'ai-service-transaction-events',
     });
     await consumer.connect();
     await consumer.subscribe({
       topic: TOPIC_TRANSACTION_EVENTS,
-      fromBeginning: false,
+      fromBeginning,
     });
     await consumer.run({
-      eachMessage: async ({ message }) => {
+      eachMessage: async ({ topic, partition, message }) => {
         if (!message.value) return;
         const raw = message.value.toString();
         let env: EventEnvelope;
@@ -45,22 +52,43 @@ export class TransactionEventsConsumer implements OnModuleInit {
           return;
         }
 
+        this.logger.log(
+          `[EVENT-BUS] CONSUME [ai-service] <- topic=${topic} ` +
+            `partition=${partition} offset=${message.offset} ` +
+            `eventType=${env.eventType} eventId=${env.eventId}`,
+        );
+
         if (
           env.eventType !== 'TransactionCompleted' &&
           env.eventType !== 'TransactionRejected'
         ) {
+          this.logger.log(
+            `[EVENT-BUS] SKIP [ai-service] eventId=${env.eventId} ` +
+              `(solo TransactionCompleted / TransactionRejected; recibido ${env.eventType})`,
+          );
           return;
         }
 
         const existing = await this.processed.findOne({
           where: { eventId: env.eventId },
         });
-        if (existing) return;
+        if (existing) {
+          this.logger.log(
+            `[EVENT-BUS] SKIP [ai-service] eventId=${env.eventId} (ya en processed_events, idempotencia)`,
+          );
+          return;
+        }
 
         let lastError: unknown;
         for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
           try {
+            this.logger.log(
+              `[EVENT-BUS] EXEC [ai-service] ${env.eventType} eventId=${env.eventId} intento=${attempt}/${MAX_RETRIES}`,
+            );
             await this.applier.apply(env);
+            this.logger.log(
+              `[EVENT-BUS] DONE [ai-service] ${env.eventType} eventId=${env.eventId} (explicación persistida)`,
+            );
             return;
           } catch (e) {
             lastError = e;
@@ -83,6 +111,13 @@ export class TransactionEventsConsumer implements OnModuleInit {
         });
       },
     });
-    this.logger.log(`Subscribed to ${TOPIC_TRANSACTION_EVENTS}`);
+    this.logger.log(
+      `Subscribed to ${TOPIC_TRANSACTION_EVENTS} (fromBeginning=${fromBeginning})`,
+    );
+    if (!fromBeginning) {
+      this.logger.warn(
+        'KAFKA_CONSUMER_FROM_BEGINNING=false: en el primer arranque pueden perderse eventos publicados antes de unirse al grupo. En local usa true en .env (ver .env.example).',
+      );
+    }
   }
 }

@@ -9,6 +9,7 @@
 | Si necesitas… | Documento |
 |---------------|-----------|
 | Entender infraestructura, flujos Kafka y cómo el código cumple el reto | [07-team / Infraestructura y cumplimiento de requerimientos](./07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md) |
+| Recorrer endpoints y flujo event-driven | [05-test / Guía paso a paso](./05-test/guia-endpoints-paso-a-paso.md) |
 | Probar todo con Postman | [05-test / Pruebas con Postman](./05-test/pruebas-con-postman.md); colección JSON en [`../postman/`](../postman/README.md) |
 | Tests por microservicio (unitarios + e2e) | [05-test / tests-por-microservicio.md](./05-test/tests-por-microservicio.md) |
 | Prioridad de tests unitarios (banca + Kafka) | [05-test / prioridad-tests-unitarios.md](./05-test/prioridad-tests-unitarios.md) |

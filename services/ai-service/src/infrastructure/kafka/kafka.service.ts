@@ -61,6 +61,17 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
   }
 
   async sendDlq(key: string | null, value: string): Promise<void> {
+    try {
+      const j = JSON.parse(value) as { eventType?: string; eventId?: string };
+      this.logger.warn(
+        `[EVENT-BUS] PUBLISH [ai-service] -> topic=${TOPIC_TRANSACTION_EVENTS_DLQ} ` +
+          `eventType=${j.eventType ?? '?'} eventId=${j.eventId ?? '?'} (DLQ)`,
+      );
+    } catch {
+      this.logger.warn(
+        `[EVENT-BUS] PUBLISH [ai-service] -> topic=${TOPIC_TRANSACTION_EVENTS_DLQ} (DLQ, raw)`,
+      );
+    }
     await this.producer.send({
       topic: TOPIC_TRANSACTION_EVENTS_DLQ,
       messages: [{ key: key ?? undefined, value }],

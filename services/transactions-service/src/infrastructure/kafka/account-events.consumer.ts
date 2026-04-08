@@ -30,17 +30,33 @@ export class AccountEventsConsumer implements OnModuleInit {
       fromBeginning: true,
     });
     await consumer.run({
-      eachMessage: async ({ message }) => {
+      eachMessage: async ({ topic, partition, message }) => {
         if (!message.value) return;
         try {
           const env = parseEnvelope(message.value.toString());
+          this.logger.log(
+            `[EVENT-BUS] CONSUME [transactions-service] <- topic=${topic} ` +
+              `partition=${partition} offset=${message.offset} ` +
+              `eventType=${env.eventType} eventId=${env.eventId}`,
+          );
           if (env.eventType === 'AccountCreated') {
             await this.applier.applyAccountCreated(
               env as EventEnvelope<AccountCreatedPayload>,
             );
+            this.logger.log(
+              `[EVENT-BUS] DONE [transactions-service] AccountCreated eventId=${env.eventId}`,
+            );
           } else if (env.eventType === 'BalanceUpdated') {
             await this.applier.applyBalanceUpdated(
               env as EventEnvelope<BalanceUpdatedPayload>,
+            );
+            this.logger.log(
+              `[EVENT-BUS] DONE [transactions-service] BalanceUpdated eventId=${env.eventId}`,
+            );
+          } else {
+            this.logger.log(
+              `[EVENT-BUS] SKIP [transactions-service] eventType=${env.eventType} ` +
+                `(solo AccountCreated / BalanceUpdated; p. ej. ClientCreated se ignora)`,
             );
           }
         } catch (e) {

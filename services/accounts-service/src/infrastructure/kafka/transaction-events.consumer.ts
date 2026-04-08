@@ -35,13 +35,32 @@ export class TransactionEventsConsumer implements OnModuleInit {
       fromBeginning: false,
     });
     await consumer.run({
-      eachMessage: async ({ message }) => {
+      eachMessage: async ({ topic, partition, message }) => {
         if (!message.value) return;
         try {
           const env = parseEnvelope(message.value.toString());
-          if (env.eventType !== 'TransactionCompleted') return;
+          this.logger.log(
+            `[EVENT-BUS] CONSUME [accounts-service] <- topic=${topic} ` +
+              `partition=${partition} offset=${message.offset} ` +
+              `eventType=${env.eventType} eventId=${env.eventId}`,
+          );
+          if (env.eventType !== 'TransactionCompleted') {
+            this.logger.log(
+              `[EVENT-BUS] SKIP [accounts-service] eventId=${env.eventId} ` +
+                `(solo TransactionCompleted; recibido ${env.eventType})`,
+            );
+            return;
+          }
+          const pl = env.payload as TransactionCompletedPayload;
+          this.logger.log(
+            `[EVENT-BUS] EXEC [accounts-service] TransactionCompleted ` +
+              `transactionId=${pl.transactionId} accountId=${pl.accountId} amount=${pl.amount}`,
+          );
           await this.applier.apply(
             env as EventEnvelope<TransactionCompletedPayload>,
+          );
+          this.logger.log(
+            `[EVENT-BUS] DONE [accounts-service] TransactionCompleted eventId=${env.eventId}`,
           );
         } catch (e) {
           this.logger.error(`Consumer error: ${e}`);

@@ -10,6 +10,7 @@ Proyecto de **tres microservicios** en **NestJS + TypeScript**, con **PostgreSQL
 - **Onboarding e infra implementada (español):** [`docs/07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md`](docs/07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md) — Docker, variables, topics, flujos, tabla requerimiento → código, troubleshooting.
 - **C4 baseline (requerimientos):** [`docs/01-requerimientos/c4-contexto-y-contenedores-v1.md`](docs/01-requerimientos/c4-contexto-y-contenedores-v1.md)
 - **Servicios (detalle técnico + diagramas):** [`docs/04-services/index.md`](docs/04-services/index.md)
+- **Endpoints y flujo event-driven (paso a paso):** [`docs/05-test/guia-endpoints-paso-a-paso.md`](docs/05-test/guia-endpoints-paso-a-paso.md)
 - **Pruebas con Postman:** [`docs/05-test/pruebas-con-postman.md`](docs/05-test/pruebas-con-postman.md)
 - **Colección Postman (importar):** [`postman/arkano-banking.postman_collection.json`](postman/arkano-banking.postman_collection.json) — ver [`postman/README.md`](postman/README.md)
 - **Prompt para agentes / extender el repo:** [`docs/06-agents/microservices-repo-prompt.md`](docs/06-agents/microservices-repo-prompt.md)
