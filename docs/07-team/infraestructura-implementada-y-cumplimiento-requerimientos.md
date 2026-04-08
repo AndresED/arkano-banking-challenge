@@ -223,7 +223,7 @@ La siguiente tabla relaciona **cada exigencia del documento de requerimientos** 
 
 ---
 
-## 8. Flujo de prueba manual (copy-paste mental)
+## 8. Flujo de prueba manual
 
 1. Crear cliente → anotar `clientId`.
 2. Crear cuenta → anotar `accountId`.
