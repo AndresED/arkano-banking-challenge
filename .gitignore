@@ -1,0 +1,53 @@
+# Monorepo: este archivo aplica a TODO el repo (raíz + services/*/…).
+# Patrones sin "/" inicial (p. ej. node_modules/, dist/, .env) valen en cualquier subcarpeta.
+# No hace falta un .gitignore por microservicio salvo reglas muy específicas de un solo servicio.
+
+# Dependencies
+node_modules/
+
+# Build / compilado (NestJS)
+dist/
+build/
+*.tsbuildinfo
+
+# Tests y cobertura (Jest: `npm run test:cov` genera p. ej. services/*/coverage/)
+coverage/
+**/coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variables de entorno (mantener *.example en el repo)
+.env
+.env.local
+.env.*.local
+
+# SO
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDEs y editores
+.idea/
+*.swp
+*.swo
+*~
+
+# Cursor / VS Code (opcional: quita la línea si versionáis .vscode recomendado)
+.vscode/*
+!.vscode/extensions.json
+
+# Temporal
+tmp/
+temp/
+.cache/
+
+# Docker (si en el futuro usáis override local)
+docker-compose.override.yml

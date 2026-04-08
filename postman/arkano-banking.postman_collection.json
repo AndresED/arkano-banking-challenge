@@ -1,0 +1,507 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-arkano-banking",
+    "name": "Arkano - Plataforma bancaria (microservicios)",
+    "description": "Colección para probar accounts (3001), transactions (3002) y ai (3003).\n\n**Orden:** carpeta **01 - Accounts** → **02 - Transactions** → **03 - AI**. Tras crear cuentas espera **1–3 s** (Kafka + snapshots). Tras cada `POST /transactions` haz **GET Transaction** en bucle hasta `completed` o `rejected`.\n\n**Variables:** esta colección usa *collection variables* (`clientId`, `accountId`, `transactionId`, …). Si importas el entorno `arkano-local`, las URLs pueden venir del entorno.\n\n**Respuestas:** envelope HTTP común `success`, `data`, `statusCode`, `timestamp`.\n\nDocumentación: `docs/05-test/pruebas-con-postman.md`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "accountsUrl", "value": "http://localhost:3001" },
+    { "key": "transactionsUrl", "value": "http://localhost:3002" },
+    { "key": "aiUrl", "value": "http://localhost:3003" },
+    { "key": "clientId", "value": "" },
+    { "key": "clientId2", "value": "" },
+    { "key": "accountId", "value": "" },
+    { "key": "accountId2", "value": "" },
+    { "key": "transactionId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Accounts",
+      "item": [
+        {
+          "name": "POST Crear cliente (principal)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Tiene clientId', () => {",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data.clientId).to.be.a('string');",
+                  "});",
+                  "if (json.data && json.data.clientId) {",
+                  "  pm.collectionVariables.set('clientId', json.data.clientId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman\",\n  \"email\": \"{{$guid}}@postman-test.local\"\n}"
+            },
+            "url": "{{accountsUrl}}/clients",
+            "description": "Crea un cliente. Guarda `clientId` en variables de colección."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Crear cuenta (principal)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('clientId')) {",
+                  "  throw new Error('Ejecuta antes \"POST Crear cliente (principal)\"');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (json.data && json.data.accountId) {",
+                  "  pm.collectionVariables.set('accountId', json.data.accountId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\"\n}"
+            },
+            "url": "{{accountsUrl}}/accounts",
+            "description": "Espera unos segundos después para que transactions sincronice el snapshot (Kafka)."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Crear cliente (segundo - transferencias)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (json.data && json.data.clientId) {",
+                  "  pm.collectionVariables.set('clientId2', json.data.clientId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman 2\",\n  \"email\": \"{{$guid}}@postman-test.local\"\n}"
+            },
+            "url": "{{accountsUrl}}/clients",
+            "description": "Opcional: necesario para probar transferencia entre cuentas."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Crear cuenta (segunda)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('clientId2')) {",
+                  "  throw new Error('Ejecuta antes \"POST Crear cliente (segundo)\"');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (json.data && json.data.accountId) {",
+                  "  pm.collectionVariables.set('accountId2', json.data.accountId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId2}}\"\n}"
+            },
+            "url": "{{accountsUrl}}/accounts",
+            "description": "Cuenta destino para transferencias."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Cuenta por id (principal)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.test('Envelope OK', () => {",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.accountId).to.eql(pm.collectionVariables.get('accountId'));",
+                  "    pm.expect(json.data).to.have.property('balance');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{accountsUrl}}/accounts/{{accountId}}",
+            "description": "Consulta saldo de la cuenta principal. Requiere `accountId` (carpeta 01)."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Cuenta por id (segunda)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('accountId2')) {",
+                  "  throw new Error('Ejecuta antes POST cuenta segunda o ignora este request');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.test('Envelope OK', () => {",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.accountId).to.eql(pm.collectionVariables.get('accountId2'));",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{accountsUrl}}/accounts/{{accountId2}}",
+            "description": "Útil para validar saldo del destino tras una transferencia."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Transactions",
+      "item": [
+        {
+          "name": "POST Depósito",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('accountId')) {",
+                  "  throw new Error('Completa antes la carpeta 01 - Accounts');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 202', () => pm.response.to.have.status(202));",
+                  "pm.test('Pending', () => pm.expect(json.data.status).to.eql('pending'));",
+                  "if (json.data && json.data.transactionId) {",
+                  "  pm.collectionVariables.set('transactionId', json.data.transactionId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"deposit\",\n  \"amount\": 100,\n  \"targetAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": "{{transactionsUrl}}/transactions",
+            "description": "Luego ejecuta GET Transaction varias veces hasta completed (o espera 1–2 s)."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Transaction por id",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('transactionId')) {",
+                  "  throw new Error('Ejecuta antes un POST en esta carpeta');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.test('Estado transacción', () => {",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.status).to.be.oneOf(['pending', 'completed', 'rejected']);",
+                  "    pm.expect(json.data.transactionId).to.eql(pm.collectionVariables.get('transactionId'));",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{transactionsUrl}}/transactions/{{transactionId}}",
+            "description": "Repite hasta `completed` o `rejected` (polling tras POST)."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Retiro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 202', () => pm.response.to.have.status(202));",
+                  "if (json.data && json.data.transactionId) {",
+                  "  pm.collectionVariables.set('transactionId', json.data.transactionId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"withdrawal\",\n  \"amount\": 25,\n  \"sourceAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": "{{transactionsUrl}}/transactions",
+            "description": "Requiere saldo suficiente (haz depósito antes)."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Transferencia",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('accountId2')) {",
+                  "  throw new Error('Crea la segunda cuenta en 01 - Accounts');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 202', () => pm.response.to.have.status(202));",
+                  "if (json.data && json.data.transactionId) {",
+                  "  pm.collectionVariables.set('transactionId', json.data.transactionId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"transfer\",\n  \"amount\": 10,\n  \"sourceAccountId\": \"{{accountId}}\",\n  \"targetAccountId\": \"{{accountId2}}\"\n}"
+            },
+            "url": "{{transactionsUrl}}/transactions",
+            "description": "Dos legs de TransactionCompleted; usa GET explanations tras completed."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Retiro sin fondos (esperar rejected)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 202', () => pm.response.to.have.status(202));",
+                  "if (json.data && json.data.transactionId) {",
+                  "  pm.collectionVariables.set('transactionId', json.data.transactionId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"withdrawal\",\n  \"amount\": 999999999,\n  \"sourceAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": "{{transactionsUrl}}/transactions",
+            "description": "Debería pasar a rejected. Luego GET Transaction y GET explanations."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - AI",
+      "item": [
+        {
+          "name": "GET Explicaciones por transactionId",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('transactionId')) {",
+                  "  throw new Error('Ejecuta antes un POST en 02 - Transactions');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.test('Explicaciones', () => {",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.transactionId).to.be.a('string');",
+                  "    pm.expect(json.data.explanations).to.be.an('array');",
+                  "    pm.expect(json.data.explanations.length).to.be.above(0);",
+                  "  });",
+                  "}",
+                  "if (pm.response.code === 404) {",
+                  "  pm.test('Aún sin explicación — reintenta tras Kafka/ai-service', () => true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{aiUrl}}/explanations/{{transactionId}}",
+            "description": "Cuando la transacción esté `completed` o `rejected` y ai-service haya consumido el evento. **404:** espera 1–3 s y reintenta."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Resumen historial por cuenta",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('accountId')) {",
+                  "  throw new Error('Completa carpeta 01 - Accounts');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.test('Resumen cuenta', () => {",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.accountId).to.eql(pm.collectionVariables.get('accountId'));",
+                  "    pm.expect(json.data).to.have.property('summary');",
+                  "    pm.expect(json.data).to.have.property('provider');",
+                  "  });",
+                  "}",
+                  "if (pm.response.code === 404) {",
+                  "  pm.test('Sin filas con accountId aún — completa varios TransactionCompleted en esa cuenta', () => true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{aiUrl}}/explanations/account/{{accountId}}/summary",
+            "description": "Requiere explicaciones previas con `accountId` (p. ej. depósitos completados). `USE_OLLAMA=true` → Ollama; si no, mock. Ver `docs/07-team/guia-ollama-local.md`."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
