@@ -6,6 +6,6 @@ Especificaciones pensadas para **agentes de código** o desarrolladores que gene
 |-----------|-------------|
 | [microservices-repo-prompt.md](./microservices-repo-prompt.md) | Orden de lectura (C4 v1, `04-services` por servicio), stack alineado al repo, topics y envelope, Postman, entregables. |
 
-El diseño detallado del dominio sigue en [../01-requerimientos/](../01-requerimientos/), [../03-event-driven/](../03-event-driven/) y [../04-services/index.md](../04-services/index.md).
+El diseño detallado del dominio sigue en [../01-requerimientos/](../01-requerimientos/), [../03-event-driven/](../03-event-driven/), [../04-services/index.md](../04-services/index.md) y la serie [fundamentos teóricos](../07-team/README.md) (referencias línea a línea al monorepo).
 
 [← Índice de documentación](../README.md)

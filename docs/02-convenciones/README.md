@@ -10,4 +10,6 @@ Documentos destacados:
 - [global-http-response.md](./global-http-response.md) — envelope de respuestas HTTP
 - [base-repo-prompt.md](./base-repo-prompt.md), [database-migrations-fk-nesting.md](./database-migrations-fk-nesting.md), [listings-pagination.md](./listings-pagination.md), [query-optimization.md](./query-optimization.md)
 
+**Misma temática con ejemplos del código Arkano (español):** [Hexagonal, CQRS y NestJS en fundamentos](../07-team/README.md) — documentos 8, 9 y 10.
+
 [← Índice de documentación](../README.md)

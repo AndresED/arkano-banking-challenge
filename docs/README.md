@@ -8,6 +8,7 @@
 
 | Si necesitas… | Documento |
 |---------------|-----------|
+| Teoría aplicada al código (EDA, Kafka, idempotencia, outbox, hexagonal, CQRS, flujo E2E, etc.) | [07-team / README: fundamentos teóricos](./07-team/README.md) |
 | Entender infraestructura, flujos Kafka y cómo el código cumple el reto | [07-team / Infraestructura y cumplimiento de requerimientos](./07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md) |
 | Recorrer endpoints y flujo event-driven | [05-test / Guía paso a paso](./05-test/guia-endpoints-paso-a-paso.md) |
 | Probar todo con Postman | [05-test / Pruebas con Postman](./05-test/pruebas-con-postman.md); colección JSON en [`../postman/`](../postman/README.md) |
@@ -29,7 +30,7 @@
 | [**04-services**](./04-services/) | Documentación técnica por microservicio: [índice y diagrama de plataforma](./04-services/index.md). |
 | [**05-test**](./05-test/) | Guías de prueba manuales (Postman). |
 | [**06-agents**](./06-agents/) | Especificaciones orientadas a agentes de código / implementación. |
-| [**07-team**](./07-team/) | Onboarding, infraestructura implementada y trazabilidad frente a requerimientos. |
+| [**07-team**](./07-team/) | Onboarding, infraestructura implementada, trazabilidad frente a requerimientos y [**fundamentos teóricos**](./07-team/README.md) (guías 1–12 con referencias al código). |
 
 ---
 
@@ -37,7 +38,7 @@
 
 1. [Requerimientos](./01-requerimientos/requerimientos.md) y [C4 v1 (contexto y contenedores)](./01-requerimientos/c4-contexto-y-contenedores-v1.md)
 2. [Visión del sistema](./system-overview.md)
-3. Carpeta [03-event-driven](./03-event-driven/) (contratos y patrones)
+3. Carpeta [03-event-driven](./03-event-driven/) (contratos y patrones) y, en paralelo o después, [fundamentos teóricos en español](./07-team/README.md) enlazados al mismo código
 4. [Servicios](./04-services/)
 5. [Convenciones](./02-convenciones/)
 

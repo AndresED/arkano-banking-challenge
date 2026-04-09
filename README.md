@@ -7,6 +7,7 @@ Proyecto de **tres microservicios** en **NestJS + TypeScript**, con **PostgreSQL
 ## Documentación
 
 - **Índice de toda la carpeta `docs/`:** [`docs/README.md`](docs/README.md)
+- **Fundamentos teóricos (español, con código del repo):** [`docs/07-team/README.md`](docs/07-team/README.md) — serie EDA, Kafka, idempotencia, outbox, retry/DLQ, microservicios, diseño de eventos, hexagonal, CQRS, NestJS, testing y flujo del sistema.
 - **Onboarding e infra implementada (español):** [`docs/07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md`](docs/07-team/infraestructura-implementada-y-cumplimiento-requerimientos.md) — Docker, variables, topics, flujos, tabla requerimiento → código, troubleshooting.
 - **C4 baseline (requerimientos):** [`docs/01-requerimientos/c4-contexto-y-contenedores-v1.md`](docs/01-requerimientos/c4-contexto-y-contenedores-v1.md)
 - **Servicios (detalle técnico + diagramas):** [`docs/04-services/index.md`](docs/04-services/index.md)
@@ -141,6 +142,8 @@ docs/
   05-test/
   06-agents/
   07-team/
+    README.md               # Onboarding + índice fundamentos teóricos
+    fundamentos-teoricos/   # Guías 1–12 (EDA, Kafka, patrones, flujo)
   system-overview.md
 postman/                    # Colección Postman importable
 ```

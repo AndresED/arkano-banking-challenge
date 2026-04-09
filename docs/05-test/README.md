@@ -7,6 +7,8 @@ Guías para validar el comportamiento del sistema y la **estrategia de tests** (
 - **[tests-por-microservicio.md](./tests-por-microservicio.md)** — revisión **por servicio** (accounts, transactions, ai): qué cubrir con **unitarios** vs **e2e**, prioridad y estado actual.
 - **[prioridad-tests-unitarios.md](./prioridad-tests-unitarios.md)** — cruce con `requerimientos.md`, matriz P0/P1/P2 por riesgo bancario y bus de eventos.
 
+Guía en español alineada al repo: [11. Testing](../07-team/fundamentos-teoricos/11.%20Testing.md) (`docs/07-team/fundamentos-teoricos/`).
+
 ---
 
 Guías para validar el comportamiento del sistema sin depender solo de tests automatizados.

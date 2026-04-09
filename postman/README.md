@@ -17,3 +17,5 @@ La colección define **variables de colección**: URLs base, `clientId`, `accoun
 5. Carpeta **03 - AI:** **GET Explicaciones** y, si ya hubo movimientos en la cuenta, **GET Resumen historial por cuenta** (`Ollama` opcional; ver [guía Ollama](../docs/07-team/guia-ollama-local.md)).
 
 Guía detallada: [`docs/05-test/pruebas-con-postman.md`](../docs/05-test/pruebas-con-postman.md).
+
+Flujo extremo a extremo (Kafka, servicios): [`docs/07-team/fundamentos-teoricos/12. System flow.md`](../docs/07-team/fundamentos-teoricos/12.%20System%20flow.md).

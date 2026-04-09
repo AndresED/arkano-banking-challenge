@@ -62,4 +62,6 @@ flowchart TB
 - **HTTP:** `ValidationPipe` global (whitelist, forbid non-whitelisted), `TransformInterceptor` (respuestas `{ success, data, ... }`), `AllExceptionsFilter`.
 - **Eventos:** envelope JSON con `eventId`, `eventType`, `source`, `occurredAt`, `version`, `payload` (ver código en `common/events/event-envelope.ts` de cada servicio).
 
+**Contexto de arquitectura y flujos:** [Fundamentos teóricos (07-team)](../07-team/README.md) y [12. System flow](../07-team/fundamentos-teoricos/12.%20System%20flow.md).
+
 [← Índice general de documentación](../README.md)
