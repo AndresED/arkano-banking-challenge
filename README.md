@@ -155,7 +155,3 @@ postman/                    # Colección Postman importable
 NestJS, TypeORM, PostgreSQL, KafkaJS, CQRS en accounts/transactions, patrón **outbox**, consumidores **idempotentes**, reintentos + **DLQ** en AI, **LLM** opcional **Ollama** local o **mock** — ver [`docs/07-team/guia-ollama-local.md`](docs/07-team/guia-ollama-local.md).
 
 ---
-
-## Licencia
-
-Revisa el campo `license` de cada `package.json` si aplica a tu uso del código.
