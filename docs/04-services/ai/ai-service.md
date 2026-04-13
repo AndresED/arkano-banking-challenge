@@ -159,6 +159,8 @@ Para `TransactionCompleted`, se persiste `accountId` del payload cuando existe, 
 
 ## 8. Base de datos — modelo ER
 
+**Diagrama ER lógico + modelo físico (tablas, tipos, índices, UNIQUE):** [diagramas-er-fisico.md](./diagramas-er-fisico.md).
+
 ```mermaid
 erDiagram
   transaction_explanations {

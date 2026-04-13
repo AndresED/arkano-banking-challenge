@@ -53,8 +53,11 @@ flowchart TB
 | Documento | Contenido |
 |-----------|-----------|
 | [accounts/accounts-service.md](./accounts/accounts-service.md) | `AppModule`, `AccountsModule`, CQRS, outbox, consumidor `TransactionCompleted`, modelo ER |
+| [accounts/diagramas-er-fisico.md](./accounts/diagramas-er-fisico.md) | ER lógico + modelo físico PostgreSQL |
 | [transactions/transactions-service.md](./transactions/transactions-service.md) | `TransactionsModule`, `TransactionExecuteService`, snapshots, consumidores |
+| [transactions/diagramas-er-fisico.md](./transactions/diagramas-er-fisico.md) | ER lógico + modelo físico PostgreSQL |
 | [ai/ai-service.md](./ai/ai-service.md) | `ExplanationsModule`, LLM mock/Ollama, reintentos y DLQ |
+| [ai/diagramas-er-fisico.md](./ai/diagramas-er-fisico.md) | ER lógico + modelo físico PostgreSQL |
 
 ## Convenciones transversales
 

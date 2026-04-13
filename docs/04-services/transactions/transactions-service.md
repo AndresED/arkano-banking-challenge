@@ -185,6 +185,8 @@ Cada **TransactionCompleted** lleva `transactionId`, `amount` (+/-) y `accountId
 
 ## 9. Base de datos — modelo ER
 
+**Diagrama ER lógico + modelo físico (tablas, tipos, PK/constraints):** [diagramas-er-fisico.md](./diagramas-er-fisico.md).
+
 ```mermaid
 erDiagram
   transactions {

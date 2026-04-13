@@ -168,6 +168,8 @@ sequenceDiagram
 
 ## 8. Base de datos — modelo entidad-relación
 
+**Diagrama ER lógico + modelo físico (tablas, tipos, PK/FK/UK):** [diagramas-er-fisico.md](./diagramas-er-fisico.md).
+
 ```mermaid
 erDiagram
   clients ||--o{ accounts : owns
